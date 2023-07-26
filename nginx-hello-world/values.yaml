@@ -1,0 +1,19 @@
+replicaCount: 1
+
+image:
+  repository: hello-world
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: hello-world.local
+      paths:
+        - path: /
+          pathType: Prefix

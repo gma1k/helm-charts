@@ -1,0 +1,12 @@
+# NOTES.txt
+Thank you for installing {{ .nginx.hello.world }}.
+
+Your release is named {{ .nginx-hello-world }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ .nginx-hello-world }}
+  $ helm get all {{ .nginx-hello-world }}
+
+To access nginx.hello.world, visit http://hello-world.local
+{{ index .Values.ingress.hosts 0 | default "hello-world.local" }}

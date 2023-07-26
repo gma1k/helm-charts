@@ -18,9 +18,7 @@ Example of installing nginx-ingress-controller using Helm chart.
 ## Usage
 
 ```
-helm install nginx-hello-world ./nginx-hello-world
-helm install nginx-hello-world ./nginx-hello-world --set hello-world.replicaCount=3
-helm status nginx-hello-world
-kubectl get pods,svc,ingress -l app.kubernetes.io/instance=nginx-hello-world
-curl http://hello-world.local
+helm install my-release ./nginx-ingress-controller
+helm status nginx-ingress-controller
+helm uninstall nginx-ingress-controller
 ```

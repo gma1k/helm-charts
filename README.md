@@ -21,6 +21,9 @@ A repository of some helm-charts examples.
 - Docker
 - Pipelines
 - Bash
+- Go
+- Python
+- Ruby
 
 ## Features
 

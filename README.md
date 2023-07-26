@@ -20,6 +20,7 @@ A repository of some helm-charts examples.
 - nginx-ingress-controller
 - Docker
 - Pipelines
+- Bash
 
 ## Features
 

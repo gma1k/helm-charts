@@ -1,5 +1,5 @@
 apiVersion: v2
 name: nginx-hello-world
 version: 0.1.0
-description: A simple helm chart with nginx to run hello-world container from dockerhub
+description: A simple helm chart with nginx to run hello-world
 appVersion: 1.0.0

@@ -2,6 +2,19 @@
 
 Example of Hello World Helm chart using nginx-ingress-controller.
 
+## Table of Contents
+
+- [Features](#features)
+- [Usage](#usage)
+
+## Features
+
+- **Helm**
+- **nginx-ingress-controller**
+- **Docker**
+- **gitlab-ci**
+- **.helmignore**
+
 ## Usage
 
 ```

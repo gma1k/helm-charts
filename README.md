@@ -19,6 +19,7 @@ A repository of some helm-charts examples.
 - YAML
 - nginx-ingress-controller
 - Docker
+- Pipelines
 
 ## Features
 

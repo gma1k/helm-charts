@@ -1,0 +1,9 @@
+apiVersion: v2
+name: nginx-ingress-controller
+version: 0.1.0
+description: A Helm chart for deploying nginx-ingress-controller on k8s
+type: application
+keywords:
+  - nginx
+  - ingress
+  - controller

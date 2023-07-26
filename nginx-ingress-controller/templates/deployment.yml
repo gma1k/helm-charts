@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nginx-ingress-controller.fullname" . }}
+  labels:
+    {{- include "nginx-ingress-controller.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nginx-ingress-controller.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nginx-ingress-controller.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "nginx-ingress-controller.serviceAccountName" . }}
+      containers:
+        - name: nginx-ingress-controller
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - -nginx-configmaps={{ .Release.Namespace }}/{{ include "nginx-ingress-controller.fullname" . }}-config
+            - -default-server-tls-secret={{ .Release.Namespace }}/{{ include "nginx-ingress-controller.fullname" . }}-default-server-secret
+            {{- if .Values.controller.appprotect.enable }}
+            - -enable-app-protect
+            {{- end }}
+            {{- if .Values.controller.appprotectdos.enable }}
+            - -enable-app-protect-dos
+            - -app-protect-dos-security-log={{ .Release.Namespace }}/{{ include "nginx-ingress-controller.fullname" . }}-appprotectdoslog-configmap
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+              scheme: HTTP
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8081
+              scheme: HTTP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: nginx-config-volume
+              mountPath: /etc/nginx/configs/
+      volumes:
+        - name: nginx-config-volume
+          configMap:
+            name: {{ include "nginx-ingress-controller.fullname" . }}-config

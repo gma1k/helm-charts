@@ -27,6 +27,7 @@ A repository of some helm-charts examples.
 
 ## Features
 
+- **[Useful scripts](scripts/)**: Some scripts to install, configure Helm, and contain Helm Cheat Sheet.  
 - **[nginx-hello-world](nginx-hello-world/)**: Helm chart example of Hello World using nginx-ingress-controller.
 
 ## Usage

@@ -1,0 +1,44 @@
+stages:
+  - build
+  - push
+  - deploy
+
+variables:
+  IMAGE: registry.gitlab.com/my-project/nginx-ingress-controller
+  CLUSTER: my-cluster
+  NAMESPACE: my-namespace
+
+build:
+  image: docker:19.03.12
+  stage: build
+  services:
+    - docker:dind # Use Docker-in-Docker service
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $IMAGE .
+    - docker tag $IMAGE $IMAGE:$CI_COMMIT_SHA
+
+push:
+  image: docker:19.03.12
+  stage: push
+  services:
+    - docker:dind # Use Docker-in-Docker service
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $IMAGE
+    - docker push $IMAGE:$CI_COMMIT_SHA
+
+deploy:
+  image: alpine:3.12.0
+  stage: deploy
+  script:
+    - apk add --update ca-certificates openssl curl tar gzip bash coreutils git jq python3 py3-pip && rm /var/cache/apk/*
+    - curl -L https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl 
+    - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash 
+    - kubectl config set-cluster $CLUSTER --server=$KUBE_URL --certificate-authority=$KUBE_CA_PEM_FILE 
+    - kubectl config set-credentials gitlab --token=$KUBE_TOKEN 
+    - kubectl config set-context default --cluster=$CLUSTER --user=gitlab 
+    - kubectl config use-context default 
+    - helm repo add nginx-stable https://helm.nginx.com/stable 
+    - helm repo update 
+    - helm upgrade --install nginx-ingress nginx-stable/nginx-ingress --namespace $NAMESPACE --values values.yaml --set controller.image.repository=$IMAGE --set controller.image.tag=$CI_COMMIT_SHA

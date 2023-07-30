@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sugarcrm.fullname" . }}
+  labels:
+    {{- include "sugarcrm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "sugarcrm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "sugarcrm.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: DB_HOST
+            value: {{ .Values.mysql.mysqlHost | quote }}
+          - name: DB_USER
+            value: {{ .Values.mysql.mysqlUser | quote }}
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "sugarcrm.fullname" . }}-mysql
+                key: mysql-password
+          - name: DB_NAME
+            value: {{ .Values.mysql.mysqlDatabase | quote }}
+          - name: DB_TYPE
+            value: mysql
+          - name: DB_TCP_PORT
+            value: "3306"
+          - name: DB_MANAGER
+            value: MysqlManager
+          - name: SUGAR_FTS_HOST
+            value: {{ .Values.elasticsearch.elasticsearchHost | quote }}
+          - name: SUGAR_FTS_PORT
+            value: "9200"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: sugarcrm-data
+            mountPath: /var/www/html/cache
+      volumes:
+      - name: sugarcrm-data
+        persistentVolumeClaim:
+          claimName: {{ include "sugarcrm.fullname" . }}-data

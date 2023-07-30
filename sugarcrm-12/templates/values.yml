@@ -1,0 +1,41 @@
+# Default values for sugarcrm.
+
+image:
+  repository: sugarcrm/sugarcrm
+  tag: 12.0.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: sugarcrm.local
+      paths:
+      - /
+  tls: []
+  #  - secretName: sugarcrm-tls
+  #    hosts:
+  #      - sugarcrm.local
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 250m
+  limits:
+    memory: 512Mi
+    cpu: 500m
+
+mysql:
+  enabled: true
+  mysqlUser: sugarcrm
+  mysqlPassword: ""
+  mysqlDatabase: sugarcrm
+
+elasticsearch:
+  enabled: true

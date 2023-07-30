@@ -12,7 +12,6 @@ Example of installing SugarCRM 12 using Helm chart.
 
 - **Helm**
 - **ingress-controller**
-- **Docker**
 
 ## Usage
 

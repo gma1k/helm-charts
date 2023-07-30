@@ -1,0 +1,12 @@
+apiVersion: v2
+name: sugarcrm
+version: 1.0.0
+description: A Helm chart for deploying SugarCRM on Kubernetes
+type: application
+dependencies:
+- name: mysql
+  version: 1.6.9
+  repository: https://charts.bitnami.com/bitnami
+- name: elasticsearch
+  version: 14.6.3
+  repository: https://helm.elastic.co
